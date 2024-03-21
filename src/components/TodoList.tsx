@@ -1,34 +1,10 @@
-import React, { useRef } from "react";
-import { todos } from "../App";
+import { todoList } from "../store";
 
 export const TodoList = () => {
   console.log("Render TodoList");
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const addTodo = () => {
-    const inputValue = inputRef.current?.value;
-    if (inputValue) {
-      todos.value = [
-        ...todos.value,
-        { id: new Date().getTime(), name: inputValue, isCompleted: false },
-      ];
-
-      inputRef.current.value = "";
-    }
-  };
-
-  const handleInputKeyPress = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    event.preventDefault();
-    if (event.key === "Enter") {
-      addTodo();
-    }
-  };
-
   const toggleTodo = (id: number, isCompleted: boolean) => {
-    todos.value = todos.value.map((todo: any) => {
+    todoList.value = todoList.value.map((todo: any) => {
       if (todo.id === id) {
         return { ...todo, isCompleted };
       }
@@ -38,36 +14,24 @@ export const TodoList = () => {
   };
 
   return (
-    <div>
-      <div className="max-w-500 flex-center gap-5">
-        <div>
-          <label className="label">
-            <span className="label-text">Enter Todo</span>
-          </label>
+    <ul className="mx-6">
+      {todoList.value.reverse().map((item) => (
+        <li key={item.id} className="flex items-center mb-6">
           <input
-            className="input"
-            type="text"
-            ref={inputRef}
-            placeholder="Add new ..."
-            onKeyUp={handleInputKeyPress}
-          />
-        </div>
-
-        <button onClick={addTodo} className="submit-btn">
-          Save
-        </button>
-      </div>
-      <h2>Todos</h2>
-      {todos.value.map((todo) => (
-        <div key={todo.id} className="flex-center">
-          <input
+            id="default-checkbox"
             type="checkbox"
-            checked={todo.isCompleted}
-            onChange={(e) => toggleTodo(todo.id, e.target.checked)}
+            checked={item.isCompleted}
+            onChange={(e) => toggleTodo(item.id, e.target.checked)}
+            className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
           />
-          <p>{todo.name}</p>
-        </div>
+          <label
+            htmlFor="default-checkbox"
+            className="ms-4 text-3sm font-medium text-gray-900 dark:text-gray-300"
+          >
+            {item.name}
+          </label>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 };
